@@ -1,10 +1,5 @@
 name: Sample File
-on:
-  pull_request:
-    branches-ignore:
-      - 'feature/**'
-      - 'Feature/**'
-
+on: workflow_dispatch
 #---
 #name: Terraform Validate, Plan & Apply
 #on:
