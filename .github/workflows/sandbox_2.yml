@@ -1,3 +1,10 @@
+name: Sample File
+on:
+  pull_request:
+    ignore_branches:
+      - 'feature/**'
+      - 'Feature/**'
+
 #---
 #name: Terraform Validate, Plan & Apply
 #on:
