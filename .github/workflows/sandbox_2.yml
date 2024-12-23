@@ -1,7 +1,7 @@
 name: Sample File
 on:
   pull_request:
-    ignore_branches:
+    branches-ignore:
       - 'feature/**'
       - 'Feature/**'
 
