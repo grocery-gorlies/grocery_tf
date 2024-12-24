@@ -1,8 +1,8 @@
-name: Terraform Feature
+name: Sandbox TF Plan
 on:
   push:
-    tags:
-    - '!refs/tags/*'
+    branches:
+    - 'feature/**'
   pull_request:
 
 permissions:
