@@ -16,19 +16,19 @@ jobs:
         role-session-name: samplerolesession
         aws-region: ${{ env.AWS_REGION }}
 
+    # Download saved plan from artifacts
+    - name: Download Terraform Plan
+      uses: actions/download-artifact@v4
+      with:
+        name: tfplan
+
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Install TF
       uses: hashicorp/setup-terraform@v3
 
-#    - name: Download Terraform Plan
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: tfplan
-#          path: |
-#            terraform/terraform.tfplan
-#            terraform/.terraform.lock.hcl
-#            if-no-files-found: error
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Initialize TF
+      run: terraform init
 
     - name: Terraform Apply
-        run: terraform apply terraform/terraform.tfplan
-    needs: terraform-fmt
-
+      run: terraform apply tfplan
