@@ -51,6 +51,9 @@ jobs:
     - name: Install TF
       uses: hashicorp/setup-terraform@v3
 
+    - name: List
+      uses: ls && cd .. && ls
+
     - name: Initialize TF
       run: terraform init
 #      run: |
