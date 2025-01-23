@@ -53,19 +53,19 @@ jobs:
 
     - name: List
       run: |
-        ls
-        cd ..
+        echo 'checking directory'
         ls
 
     - name: Initialize TF
       run: terraform init
-#      run: |
-#        terraform init \
-#        -backend-config="bucket=terraform-approve-before-apply-tfstate" \
 #        -backend-config="key=terraform.tfstate" \
 #        -backend-config="region=eu-west-1"
+
     - name: Terraform Plan
-      run: terraform plan -out=terraform.tfplan
+      run: |
+        terraform plan \
+        -var-file="src\sandbox.tfvars" \
+        -out=terraform.tfplan
 
     - name: Upload Terraform Plan
       uses: actions/upload-artifact@v4
