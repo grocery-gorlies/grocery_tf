@@ -58,13 +58,14 @@ jobs:
         ls
 
     - name: Initialize TF
-      run: terraform init
+      run: |
+        ls
+        terraform init
 #        -backend-config="key=terraform.tfstate" \
 #        -backend-config="region=eu-west-1"
 
     - name: Terraform Plan
       run: |
-        ls
         terraform plan \
         -var-file="sandbox.tfvars" \
         -out=terraform.tfplan
