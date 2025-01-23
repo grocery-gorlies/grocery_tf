@@ -51,10 +51,10 @@ jobs:
     - name: Install TF
       uses: hashicorp/setup-terraform@v3
 
-    - name: List
+    - name: Enter Directory
       run: |
         echo 'checking directory'
-        ls
+        cd src
 
     - name: Initialize TF
       run: terraform init
@@ -64,7 +64,7 @@ jobs:
     - name: Terraform Plan
       run: |
         terraform plan \
-        -var-file="src/sandbox.tfvars" \
+        -var-file="sandbox.tfvars" \
         -out=terraform.tfplan
 
     - name: Upload Terraform Plan
