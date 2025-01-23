@@ -1,5 +1,6 @@
 name: Sandbox TF Apply
-on: workflow_dispatch
+on:
+  workflow_dispatch:
 
 jobs:
   terraform-apply:
