@@ -51,21 +51,16 @@ jobs:
     - name: Install TF
       uses: hashicorp/setup-terraform@v3
 
-    - name: Enter Directory
-      run: |
-        echo 'checking directory'
-        cd src
-        ls
-
     - name: Initialize TF
       run: |
-        ls
+        cd src
         terraform init
 #        -backend-config="key=terraform.tfstate" \
 #        -backend-config="region=eu-west-1"
 
     - name: Terraform Plan
       run: |
+        cd src
         terraform plan \
         -var-file="sandbox.tfvars" \
         -out=terraform.tfplan
