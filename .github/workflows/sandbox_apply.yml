@@ -22,6 +22,8 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: "terraform.tfplan"
+
+    - name: Check directory
       run: ls
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
