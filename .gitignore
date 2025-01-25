@@ -1,6 +1,7 @@
 .idea
-src/modules/tf-state/.terraform
-src/modules/tf-state/.terraform.lock.hcl
-src/modules/tf-state/terraform.tfstate
-src/modules/tf-state/terraform.tfstate.backup
+src/.terraform
+src/.terraform.lock.hcl
+src/terraform.tfstate
+src/terraform.tfstate.backup
+src/terraform.tfplan
 .github/workflows/sandbox_2.yml

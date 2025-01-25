@@ -21,7 +21,7 @@ jobs:
     - name: Download Terraform Plan
       uses: actions/download-artifact@v4
       with:
-        name: tfplan
+        name: "terraform.tfplan"
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Install TF
@@ -32,4 +32,4 @@ jobs:
       run: terraform init
 
     - name: Terraform Apply
-      run: terraform apply tfplan
+      run: terraform apply "terraform.tfplan"

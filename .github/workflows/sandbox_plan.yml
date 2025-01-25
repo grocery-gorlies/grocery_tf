@@ -54,8 +54,8 @@ jobs:
     - name: Initialize TF
       run: |
         cd src
-        terraform init
-#        -backend-config="key=terraform.tfstate" \
+        terraform init \
+        -backend-config="sandbox_backend.tfvars"
 #        -backend-config="region=eu-west-1"
 
     - name: Terraform Plan
@@ -63,7 +63,7 @@ jobs:
         cd src
         terraform plan \
         -var-file="sandbox.tfvars" \
-        -out=terraform.tfplan
+        -out="terraform.tfplan"
 
     - name: Upload Terraform Plan
       uses: actions/upload-artifact@v4

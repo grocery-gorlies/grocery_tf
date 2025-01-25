@@ -1,4 +1,5 @@
 module "tf-state" {
-    source = "./modules/tf-state"
-    bucket_name = "${var.state_bucket_name}-${var.env_abbrev}"
+  source            = "./modules/tf-state"
+  state_bucket_name = var.state_bucket_name
+  env_abbrev        = var.env_abbrev
 }

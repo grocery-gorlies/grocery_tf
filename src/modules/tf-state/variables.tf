@@ -1,4 +1,7 @@
-variable "bucket_name" {
+variable "state_bucket_name" {
   type    = string
-  default = "ggtfstate"
+}
+
+variable "env_abbrev" {
+  type    = string
 }
