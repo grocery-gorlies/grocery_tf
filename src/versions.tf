@@ -8,13 +8,6 @@ terraform {
   }
 
   backend "s3" {}
-#  backend "s3" {
-#    bucket         = var.state_bucket_name
-#    key            = "${var.env_abbrev}/aws_infrastructure"
-#    region         = "us-east-1"
-#    dynamodb_table = "app-state-${var.env_abbrev}"
-#    encrypt        = true
-#  }
 }
 
 provider "aws" {
