@@ -1,6 +1,6 @@
 # S3 Bucket for TF State File
 resource "aws_s3_bucket" "remote_tf_state" {
-  bucket = var.bucket_name
+  bucket = var.state_bucket_name
   lifecycle {
     prevent_destroy = true
   }
@@ -24,7 +24,7 @@ resource "aws_s3_bucket_versioning" "remote_tf_state" {
 
 # Dynamo DB Table for Locking TF Config
 resource "aws_dynamodb_table" "terraform_state_lock" {
-  name           = "app-state"
+  name           = "app-state-${var.env_abbrev}"
   read_capacity  = 1
   write_capacity = 1
   hash_key       = "LockID"

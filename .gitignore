@@ -1,1 +1,7 @@
 .idea
+src/.terraform
+src/.terraform.lock.hcl
+src/terraform.tfstate
+src/terraform.tfstate.backup
+src/terraform.tfplan
+.github/workflows/sandbox_2.yml

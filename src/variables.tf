@@ -1,7 +1,7 @@
 variable "env_abbrev" {
-    type = string
+  type = string
 }
 
 variable "state_bucket_name" {
-    type = string
+  type = string
 }

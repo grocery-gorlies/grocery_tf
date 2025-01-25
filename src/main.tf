@@ -1,4 +1,5 @@
-#module "tf-state-sbox" {
-#    source = "./modules/tf_state"
-#    bucket_name = "${var.state_bucket_name}-${var.env_abbrev}"
-#}
+module "tf-state" {
+  source            = "./modules/tf-state"
+  state_bucket_name = var.state_bucket_name
+  env_abbrev        = var.env_abbrev
+}
