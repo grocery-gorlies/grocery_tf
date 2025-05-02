@@ -1,3 +1,12 @@
+locals {
+  basic_tags = {
+    region      = var.region,
+    environment = var.env_abbrev,
+    project     = var.project_name
+  }
+}
+
+
 data "aws_iam_policy_document" "assume_role" {
   count = var.create_role ? 1 : 0
 
@@ -11,42 +20,58 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
+
 resource "aws_iam_role" "lambda" {
   count = var.create_role ? 1 : 0
 
-  name               = "${var.function_name}_lambda_iam"
+  name               = "${var.function_name}-lambda-iam"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
+
+  tags = merge({
+    resource = "iam"
+  },
+    var.tags,
+    local.basic_tags
+  )
 }
 
-# if policies need to be attached later on
-# resource "aws_iam_role_policy_attachment" "lambda_iam_s3" {
-#   role       = aws_iam_role.lambda_iam.name
-#   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-# }
+
+resource "aws_iam_role_policy_attachment" "cloudwatch" {
+  role       = aws_iam_role.lambda.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+
+resource "aws_cloudwatch_log_group" "lambda" {
+  name = join("/", [
+    "/lambda",
+    var.region,
+    "${var.project_name}-${var.env_abbrev}",
+    aws_lambda_function.lambda.function_name
+  ])
+  retention_in_days = 7
+  lifecycle {
+    prevent_destroy = false
+  }
+
+  tags = merge({
+    resource = "cloudwatch"
+  },
+    var.tags,
+    local.basic_tags
+  )
+}
+
 
 data "archive_file" "dummy_python" {
   type        = "zip"
-  source_file = "lambda.py"
+  source_file = "lambda_wrapper.py"
   output_path = "lambda_function.zip"
 }
 
-# resource "aws_lambda_function" "lambda" {
-#   filename      = "lambda_function.zip"
-#   function_name = var.function_name
-#   role          = aws_iam_role.lambda_iam.arn
-#
-#   handler       = "index.lambda_handler"
-#   runtime = "python3.12"
-#
-#   source_code_hash = null
-#
-#   environment {
-#     variables = {
-#       foo = "bar"
-#     }
-#   }
-# }
 
+# A dependency on a resource with count = 0 is valid,
+# because the resource block still exists even though it declares zero instances.
 resource "aws_lambda_function" "lambda" {
   function_name                  = var.function_name
   description                    = var.description
@@ -71,10 +96,21 @@ resource "aws_lambda_function" "lambda" {
   environment {
     variables = var.environment_variables
   }
+
+  tags = merge({
+    resource = "lambda"
+  },
+    var.tags,
+    local.basic_tags
+  )
+
+  depends_on    = [aws_cloudwatch_log_group.lambda]
 }
 
 
 # nice to add, there's an option for destination config on_failure/success
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-eventinvokeconfig.html
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function_event_invoke_config
 resource "aws_lambda_function_event_invoke_config" "this" {
   count = var.asynchronous ? 1 : 0
 
@@ -82,4 +118,3 @@ resource "aws_lambda_function_event_invoke_config" "this" {
   maximum_event_age_in_seconds = var.maximum_event_age_in_seconds
   maximum_retry_attempts       = var.maximum_retry_attempts
 }
-

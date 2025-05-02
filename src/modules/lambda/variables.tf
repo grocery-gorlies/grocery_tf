@@ -1,3 +1,23 @@
+variable "project_name" {
+    type        = string
+    description = "Name of project"
+    default     = "general"
+}
+
+# make required if env's extend
+variable "env_abbrev" {
+    type        = string
+    description = "sbox/int/prod"
+    default     = "sbox"
+}
+
+# make required if regions extend
+variable "region" {
+    type        = string
+    description = "Region of resource"
+    default     = "us-east-1"
+}
+
 variable "create_role" {
     type    = bool
     default = true
@@ -22,7 +42,7 @@ variable "lambda_role" {
 variable "handler" {
     type        = string
     description = "Entry point for lambda"
-    default     = "index.lambda_handler"
+    default     = "lambda_wrapper.lambda_handler"
 }
 
 variable "memory_size" {
@@ -81,4 +101,10 @@ variable "maximum_retry_attempts" {
     type        = number
     description = "Max number of retries - 0 to 2"
     default     = 2
+}
+
+variable "tags" {
+    type        = map(string)
+    description = "Map of tags for lambda"
+    default     = {}
 }
