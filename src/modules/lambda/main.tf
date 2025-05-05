@@ -3,6 +3,7 @@ locals {
     region      = var.region,
     environment = var.env_abbrev,
     project     = var.project_name
+    function    = var.function_name
   }
 }
 
@@ -37,6 +38,7 @@ resource "aws_iam_role" "lambda" {
 
 
 resource "aws_iam_role_policy_attachment" "cloudwatch" {
+  count = var.create_role ? 1 : 0
   role       = aws_iam_role.lambda.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
@@ -60,6 +62,53 @@ resource "aws_cloudwatch_log_group" "lambda" {
     var.tags,
     local.basic_tags
   )
+}
+
+
+data "aws_iam_policy_document" "s3" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:ListBucket",
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject"
+    ]
+    resources = var.used_s3_resources
+  }
+
+  statement {
+    effect = "Deny"
+    actions = ["s3:*"]
+    resources = ["arn:aws:s3:::ggstate"]
+  }
+}
+
+
+data "aws_iam_policy_document" "combined" {
+  # count = var.create_role && (var.policy1_enabled || var.policy2_enabled) ? 1 : 0
+  count = var.create_role && var.attach_basic_s3_policy ? 1 : 0
+  source_policy_documents = compact([
+      var.attach_basic_s3_policy == true ? data.aws_iam_policy_document.s3.json : "",
+      # var.policy2_enable == true ? data.aws_iam_policy_document.policy2.json : "",
+  ])
+}
+
+
+resource "aws_iam_policy" combined {
+  # count = var.create_role && (var.policy1_enabled || var.policy2_enabled) ? 1 : 0
+  count = var.create_role && var.attach_basic_s3_policy ? 1 : 0
+  name = "combined-${var.function_name}"
+  description = "combined policy for lambda ${var.function_name}"
+  policy = data.aws_iam_policy_document.combined.json
+}
+
+
+resource "aws_iam_role_policy_attachment" "combined"{
+  # count = var.create_role && (var.policy1_enabled || var.policy2_enabled) ? 1 : 0
+  count = var.create_role && var.attach_basic_s3_policy ? 1 : 0
+  role = aws_iam_role.lambda.name
+  policy_arn = aws_iam_policy.combined.arn
 }
 
 
