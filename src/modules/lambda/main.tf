@@ -26,7 +26,7 @@ resource "aws_iam_role" "lambda" {
   count = var.create_role ? 1 : 0
 
   name               = "${var.function_name}-lambda-iam"
-  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+  assume_role_policy = data.aws_iam_policy_document.assume_role[0].json
 
   tags = merge({
     resource = "iam"
@@ -100,15 +100,15 @@ resource "aws_iam_policy" combined {
   count = var.create_role && var.attach_basic_s3_policy ? 1 : 0
   name = "combined-${var.function_name}"
   description = "combined policy for lambda ${var.function_name}"
-  policy = data.aws_iam_policy_document.combined.json
+  policy = data.aws_iam_policy_document.combined[0].json
 }
 
 
 resource "aws_iam_role_policy_attachment" "combined"{
   # count = var.create_role && (var.policy1_enabled || var.policy2_enabled) ? 1 : 0
   count = var.create_role && var.attach_basic_s3_policy ? 1 : 0
-  role = aws_iam_role.lambda.name
-  policy_arn = aws_iam_policy.combined.arn
+  role = aws_iam_role.lambda[0].name
+  policy_arn = aws_iam_policy.combined[0].arn
 }
 
 
@@ -124,9 +124,11 @@ data "archive_file" "dummy_python" {
 resource "aws_lambda_function" "lambda" {
   function_name                  = var.function_name
   description                    = var.description
-  role                           = var.create_role ?
-    aws_iam_role.lambda.arn :
-    var.lambda_role
+  role                           = var.create_role ? (
+  aws_iam_role.lambda[0].arn
+  ) : (
+  var.lambda_role
+  )
   handler                        = var.handler
   memory_size                    = var.memory_size
   reserved_concurrent_executions = var.concurrency_limit

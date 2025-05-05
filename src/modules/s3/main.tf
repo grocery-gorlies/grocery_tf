@@ -68,5 +68,5 @@ data "aws_iam_policy_document" "combined" {
 resource "aws_s3_bucket_policy" "combined" {
   count = var.attach_bucket_policies ? 1 : 0
   bucket = aws_s3_bucket.this.id
-  policy = data.aws_iam_policy_document.combined.json
+  policy = data.aws_iam_policy_document.combined[0].json
 }
