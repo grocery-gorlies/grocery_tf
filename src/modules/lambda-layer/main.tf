@@ -36,9 +36,10 @@ resource "terraform_data" "lambda_layer" {
   }
 }
 
-
+# todo - is this redundant?
 data "aws_s3_bucket" "selected" {
-  bucket = "${var.project_name}-${var.env_abbrev}"
+  bucket = var.layer_bucket != "" ? var.layer_bucket :
+    "${var.project_name}-${var.env_abbrev}"
 }
 
 # upload zip file to s3

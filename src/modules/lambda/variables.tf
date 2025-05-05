@@ -18,6 +18,12 @@ variable "region" {
   default     = "us-east-1"
 }
 
+variable "region_abbrev" {
+  type        = string
+  description = "Abbreviated region of resource"
+  default     = "ue1"
+}
+
 variable "create_role" {
   type    = bool
   default = true

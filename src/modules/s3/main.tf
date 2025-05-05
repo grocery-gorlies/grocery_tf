@@ -1,7 +1,7 @@
 locals {
   proper_bucket_name = var.bucket_name == "" ?
-    "${var.project_name}-${var.env_abbrev}" :
-    "${var.project_name}-${var.bucket_name}-${var.env_abbrev}"
+    "${var.project_name}-${var.env_abbrev}-${var.region_abbrev}" :
+    "${var.project_name}-${var.bucket_name}-${var.env_abbrev}-${var.region_abbrev}"
 
   basic_tags = {
     region      = var.region,

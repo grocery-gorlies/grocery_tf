@@ -10,6 +10,12 @@ variable "env_abbrev" {
   default     = "sbox"
 }
 
+variable "region_abbrev" {
+  type        = string
+  description = "Abbreviated region of resource"
+  default     = "ue1"
+}
+
 variable "layer_name" {
   type        = string
   description = "Name of layer zip file"
@@ -28,14 +34,20 @@ variable "requirements_path" {
   default     = ""
 }
 
-variable "compatible_runtimes" {
-  type = list(string)
-  description = "List of compatible runtimes for layer"
-  default = ["python3.12"]
+variable "layer_bucket" {
+  type        = string
+  description = "ID of bucket to save layer source code"
+  default     = ""
 }
 
 variable "layer_s3_prefix" {
   type        = string
   description = "Name of s3 bucket to put lambda layer zip in"
   default     = "lambdalayers"
+}
+
+variable "compatible_runtimes" {
+  type = list(string)
+  description = "List of compatible runtimes for layer"
+  default = ["python3.12"]
 }
