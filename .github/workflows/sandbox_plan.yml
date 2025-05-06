@@ -64,6 +64,7 @@ jobs:
         terraform plan \
         -var-file="sandbox.tfvars" \
         -out="terraform.tfplan"
+        ls
 
     - name: Upload Terraform Plan
       uses: actions/upload-artifact@v4
