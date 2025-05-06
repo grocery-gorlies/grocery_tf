@@ -33,7 +33,7 @@ jobs:
     - name: Download Terraform Plan
       uses: actions/download-artifact@v4
       with:
-        name: "terraform.tfplan"
+        name: tfplan
 
     - name: Check directory 2
       run: |
