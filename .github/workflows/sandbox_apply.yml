@@ -19,13 +19,16 @@ jobs:
         role-session-name: samplerolesession
         aws-region: ${{ vars.AWS_REGION }}
 
+    - name: Check directory 1
+      run: ls
+
     # Download saved plan from artifacts
     - name: Download Terraform Plan
       uses: actions/download-artifact@v4
       with:
         name: "terraform.tfplan"
 
-    - name: Check directory
+    - name: Check directory 2
       run: ls
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
