@@ -84,14 +84,13 @@ jobs:
           src/terraform.tfplan
           if-no-files-found: error
 #          terraform/.terraform.lock.hcl
-      run: echo "planuploaded=${{ steps.uploadplan.outcome == 'success' }}" >> $GITHUB_OUTPUT
-
 
     - name: Terraform Apply Potential
       run: |
         echo "Will TF apply run?"
         echo "${{ steps.tfplan.outputs.exitcode }}"
         echo "${{ steps.uploadplan.outcome }}"
+        echo "planuploaded=${{ steps.uploadplan.outcome == 'success' }}" >> $GITHUB_OUTPUT
         echo "${{ steps.uploadplan.outputs.planuploaded }}"
         echo ${{ steps.tfplan.outputs.exitcode != 1 && steps.uploadplan.outcome == 'success' }}
 
