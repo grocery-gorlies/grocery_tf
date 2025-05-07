@@ -40,9 +40,7 @@ jobs:
     needs: terraform-fmt
     outputs:
       exitcode: ${{ steps.tfplan.outputs.exitcode }}
-      planuploaded0: ${{ steps.uploadplan.outcome == 'success' }}
-      planuploaded1: ${{ steps.uploadplan.outputs.planuploaded1 }}
-      planuploaded2: ${{ steps.uploadplan.outputs.planuploaded2 }}
+      planuploaded: ${{ steps.uploadplan.outcome == 'success' }}
     steps:
     - name: Checkout Git
       uses: actions/checkout@v4
@@ -90,78 +88,61 @@ jobs:
     - name: Terraform Apply Potential
       run: |
         echo "Will TF apply run?"
-        echo "${{ steps.tfplan.outputs.exitcode }}"
-        echo "${{ steps.uploadplan.outcome }}"
-        echo "Was plan uploaded? answer should be true"
-        echo ${{ steps.uploadplan.outputs.planuploaded0 }}
-        echo "Saving just outcome which should be success"
-        echo "planuploaded1=${{ steps.uploadplan.outcome }}" >> $GITHUB_OUTPUT
-        echo "${{ steps.uploadplan.outputs.planuploaded1 }}"
-        echo "Trying two commands - get true/false and then save to output"
-        planuploaded2="${{ steps.uploadplan.outcome == 'success' }}"
-        echo "$planuploaded2"
-        echo "planuploaded2=$planuploaded2" >> $GITHUB_OUTPUT
-        echo ${{ steps.uploadplan.outputs.planuploaded2 }}
+        echo "${{ steps.tfplan.outputs.exitcode && steps.uploadplan.outcome == 'success' }}"
 
 
   terraform-apply:
     name: 'Terraform Apply'
     runs-on: ubuntu-latest
     needs: terraform-plan
-#    if: |
-#      needs.terraform-plan.outputs.exitcode != 1 &&
-#      needs.terraform-plan.uploadplan.outcome == 'success'
+    if: |
+      needs.terraform-plan.outputs.exitcode != 1 &&
+      needs.terraform-plan.outputs.planuploaded
     environment:
       name: sandbox-test
     steps:
     - name: Terraform Apply Potential
       run: |
-        echo "Will TF apply run?"
+        echo "TF Plan exit code?"
         echo "${{ needs.terraform-plan.outputs.exitcode }}"
-        echo "planuploaded0"
-        echo "${{ needs.terraform-plan.outputs.planuploaded0 }}"
-        echo "planuploaded1"
-        echo "${{ needs.terraform-plan.outputs.planuploaded1 }}"
-        echo "planuploaded2"
-        echo "${{ needs.terraform-plan.outputs.planuploaded2 }}"
-#        echo "${{ needs.terraform-plan.outputs.exitcode != 1 && needs.terraform-plan.steps.uploadplan.outcome == 'success' }}"
+        echo "Was plan uploaded successfully?"
+        echo "${{ needs.terraform-plan.outputs.planuploaded }}"
 
-#    - name: Checkout Git
-#      uses: actions/checkout@v4
-#
-#    - name: Configure AWS Credentials
-#      uses: aws-actions/configure-aws-credentials@v4
-#      with:
-#        role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_DEPLOY_ROLE }}
-#        role-session-name: samplerolesession
-#        aws-region: ${{ env.AWS_REGION }}
-#
-#    - name: Check directory 1
-#      run: ls
+    - name: Checkout Git
+      uses: actions/checkout@v4
 
-    # Download saved plan from artifacts
-#    - name: Download Terraform Plan
-#      uses: actions/download-artifact@v4
-#      with:
-#        name: uploadplan
-#
-#    - name: Check directory 2
-#      run: |
-#        ls
-#        pwd
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_DEPLOY_ROLE }}
+        role-session-name: samplerolesession
+        aws-region: ${{ env.AWS_REGION }}
 
-#    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-#    - name: Install TF
-#      uses: hashicorp/setup-terraform@v3
-#
-#    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-#    - name: Initialize TF
-#      run: |
-#        cd src
-#        terraform init \
-#        -backend-config="sandbox_backend.tfvars"
-#
-#    - name: Terraform Apply
-#      run: |
-#        cd src
-#        terraform apply "terraform.tfplan"
+    - name: Check directory 1
+      run: ls
+
+    - name: Download Terraform Plan
+      uses: actions/download-artifact@v4
+      with:
+        name: uploadplan
+
+    - name: Check directory 2
+      run: |
+        ls
+        pwd
+
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    - name: Install TF
+      uses: hashicorp/setup-terraform@v3
+
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Initialize TF
+      run: |
+        cd src
+        terraform init \
+        -backend-config="sandbox_backend.tfvars"
+
+    - name: Terraform Apply
+      run: |
+        cd src
+        terraform apply "terraform.tfplan"
