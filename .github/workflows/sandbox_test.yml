@@ -105,9 +105,9 @@ jobs:
     - name: Terraform Apply Potential
       run: |
         echo "Will TF apply run?"
-        echo "${{ needs.terraform-plan.tfplan.outputs.exitcode }}"
-        echo "${{ needs.terraform-plan.uploadplan.outcome }}"
-        echo "${{ needs.terraform-plan.tfplan.outputs.exitcode != 1 && needs.terraform-plan.uploadplan.outcome == 'success' }}"
+        echo "${{ needs.terraform-plan.outputs.exitcode }}"
+        echo "${{ needs.terraform-plan.steps.uploadplan.outcome }}"
+        echo "${{ needs.terraform-plan.outputs.exitcode != 1 && needs.terraform-plan.steps.uploadplan.outcome == 'success' }}"
 
 #    - name: Checkout Git
 #      uses: actions/checkout@v4
