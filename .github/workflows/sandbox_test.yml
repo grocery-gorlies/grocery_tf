@@ -95,7 +95,7 @@ jobs:
         echo "Was plan uploaded? answer should be true"
         echo ${{ steps.uploadplan.outputs.planuploaded0 }}
         echo "Saving just outcome which should be success"
-        echo "planuploaded1=${{steps.uploadplan.outcome}}" >> $GITHUB_OUTPUT
+        echo "planuploaded1=${{ steps.uploadplan.outcome }}" >> $GITHUB_OUTPUT
         echo "${{ steps.uploadplan.outputs.planuploaded1 }}"
         echo "Trying two commands - get true/false and then save to output"
         planuploaded2="${{ steps.uploadplan.outcome == 'success' }}"
@@ -118,8 +118,11 @@ jobs:
       run: |
         echo "Will TF apply run?"
         echo "${{ needs.terraform-plan.outputs.exitcode }}"
+        echo "planuploaded0"
         echo "${{ needs.terraform-plan.outputs.planuploaded0 }}"
+        echo "planuploaded1"
         echo "${{ needs.terraform-plan.outputs.planuploaded1 }}"
+        echo "planuploaded2"
         echo "${{ needs.terraform-plan.outputs.planuploaded2 }}"
 #        echo "${{ needs.terraform-plan.outputs.exitcode != 1 && needs.terraform-plan.steps.uploadplan.outcome == 'success' }}"
 
