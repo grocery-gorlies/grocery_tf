@@ -34,6 +34,7 @@ jobs:
     - name: Check Format
       run: terraform fmt -check
 
+
   terraform-plan:
     name: 'Terraform Plan'
     runs-on: ubuntu-latest
