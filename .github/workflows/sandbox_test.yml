@@ -83,6 +83,14 @@ jobs:
           if-no-files-found: error
 #          terraform/.terraform.lock.hcl
 
+    - name: Terraform Apply Potential
+      run: |
+        echo "Will TF apply run?"
+        echo "${{steps.tfplan.outputs.exitcode}}"
+        echo "${{steps.uploadplan.outcome}}"
+        echo ${{ needs.tf-plan.outputs.exitcode != 1 && needs.uploadplan.outcome == 'success' }}
+
+
   terraform-apply:
     name: 'Terraform Apply'
     runs-on: ubuntu-latest
