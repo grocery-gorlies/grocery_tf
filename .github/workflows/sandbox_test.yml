@@ -40,6 +40,7 @@ jobs:
     needs: terraform-fmt
     outputs:
       exitcode: ${{ steps.tfplan.outputs.exitcode }}
+      planuploaded: ${{ steps.uploadplan.outputs.planuploaded }}
     steps:
     - name: Checkout Git
       uses: actions/checkout@v4
@@ -83,12 +84,15 @@ jobs:
           src/terraform.tfplan
           if-no-files-found: error
 #          terraform/.terraform.lock.hcl
+      run: echo "planuploaded=${{ steps.uploadplan.outcome == 'success' }}" >> $GITHUB_OUTPUT
+
 
     - name: Terraform Apply Potential
       run: |
         echo "Will TF apply run?"
         echo "${{ steps.tfplan.outputs.exitcode }}"
         echo "${{ steps.uploadplan.outcome }}"
+        echo "${{ steps.uploadplan.outputs.planuploaded }}"
         echo ${{ steps.tfplan.outputs.exitcode != 1 && steps.uploadplan.outcome == 'success' }}
 
 
@@ -97,7 +101,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: terraform-plan
 #    if: |
-#      needs.terraform-plan.tfplan.outputs.exitcode != 1 &&
+#      needs.terraform-plan.outputs.exitcode != 1 &&
 #      needs.terraform-plan.uploadplan.outcome == 'success'
     environment:
       name: sandbox-test
