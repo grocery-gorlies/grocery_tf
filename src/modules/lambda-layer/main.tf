@@ -26,9 +26,8 @@ resource "terraform_data" "lambda_layer" {
         # Installing python dependencies...
         if [ -f ${local.requirements_full_path} ]; then
             echo ${local.log2}
-            python3.12 -m pip3 install --upgrade pip3
-            python3.12 -m pip3 install --upgrade setuptools
-            python3.12 -m pip3 install -r ${local.requirements_full_path} -t layer/
+            python3.12 -m pip install --upgrade pip
+            python3.12 -m pip install -r ${local.requirements_full_path} -t layer/
             zip -r ${local.layer_zip_name} layer/
         else
             echo ${local.log3}
