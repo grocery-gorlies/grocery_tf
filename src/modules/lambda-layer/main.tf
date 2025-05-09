@@ -1,7 +1,9 @@
 locals {
-  requirements_full_path = var.requirements_path == "" ?
-    "${path.cwd}/requirements/${var.requirements_file}" :
-    var.requirements_path
+  requirements_full_path = var.requirements_path == "" ? (
+  "${path.cwd}/requirements/${var.requirements_file}"
+  ) : (
+  var.requirements_path
+  )
   layer_zip_name = "${var.layer_name}.zip"
   log1 = "creating layer from ${local.requirements_full_path}"
   log2 = "running pip install for ${var.requirements_file}"
