@@ -26,7 +26,7 @@ resource "terraform_data" "lambda_layer" {
         # Installing python dependencies...
         if [ -f ${local.requirements_full_path} ]; then
             echo ${local.log2}
-            python.exe -m pip install --upgrade pip
+            pip install --upgrade setuptools
             pip install -r ${local.requirements_full_path} -t layer/
             zip -r ${local.layer_zip_name} layer/
         else
