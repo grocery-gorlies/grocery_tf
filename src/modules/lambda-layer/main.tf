@@ -49,7 +49,7 @@ data "aws_s3_bucket" "selected" {
 # upload zip file to s3
 resource "aws_s3_object" "lambda_layer_zip" {
   bucket     = data.aws_s3_bucket.selected.id
-  key        = "${var.layer_s3_prefix}/${var.layer_name}/${local.layer_zip_name}"
+  key        = "${var.layer_s3_prefix}/${local.layer_zip_name}"
   source     = local.layer_zip_name
   depends_on = [terraform_data.lambda_layer] # triggered only if the zip file is created
 }
