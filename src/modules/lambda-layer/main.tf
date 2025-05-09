@@ -54,7 +54,7 @@ resource "aws_s3_object" "lambda_layer_zip" {
   key    = "${var.layer_s3_prefix}/${local.layer_zip_name}"
   source = local.layer_zip_name
   # source_hash = terraform_data.lambda_layer.output
-  source_hash = base64sha256(file(local.layer_zip_name))
+  source_hash = base64sha256(file(terraform_data.lambda_layer.output))
   depends_on = [terraform_data.lambda_layer] # triggered only if the zip file is created
 }
 
