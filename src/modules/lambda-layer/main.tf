@@ -1,6 +1,7 @@
 locals {
+  # src/modules/lambda-layer/requirements/default-py.txt
   requirements_full_path = var.requirements_path == "" ? (
-  "${path.cwd}/requirements/${var.requirements_file}"
+  "${path.cwd}/modules/lambda-layer/requirements/${var.requirements_file}"
   ) : (
   var.requirements_path
   )
