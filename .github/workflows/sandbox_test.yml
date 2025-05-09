@@ -1,0 +1,149 @@
+name: Sandbox TF TEST
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - 'feature/**'
+  pull_request:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION : us-east-1
+
+jobs:
+  terraform-fmt:
+    name: 'Terraform Format'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Git
+      uses: actions/checkout@v4
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_DEPLOY_ROLE }}
+        role-session-name: samplerolesession
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Install TF
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Check Format
+      run: terraform fmt -check
+
+
+  terraform-plan:
+    name: 'Terraform Plan'
+    runs-on: ubuntu-latest
+    needs: terraform-fmt
+    outputs:
+      exitcode: ${{ steps.tfplan.outputs.exitcode }}
+      planuploaded: ${{ steps.uploadplan.outcome == 'success' }}
+    steps:
+    - name: Checkout Git
+      uses: actions/checkout@v4
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_DEPLOY_ROLE }}
+        role-session-name: samplerolesession
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Install TF
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Initialize TF
+      run: |
+        cd src
+        terraform init \
+        -backend-config="sandbox_backend.tfvars"
+#        -backend-config="region=eu-west-1"
+
+    - name: Terraform Plan
+      id: tfplan
+      run: |
+        cd src
+        set +e
+        terraform plan \
+        -var-file="sandbox.tfvars" \
+        -out="terraform.tfplan" \
+        -detailed-exitcode
+        echo "exitcode=$?" >> $GITHUB_OUTPUT
+        ls
+        pwd
+
+    - name: Upload Terraform Plan
+      id: uploadplan
+      uses: actions/upload-artifact@v4
+      with:
+        name: uploadplan
+        path: |
+          src/terraform.tfplan
+          if-no-files-found: error
+#          terraform/.terraform.lock.hcl
+
+    - name: Terraform Apply Potential
+      run: |
+        echo "Will TF apply run?"
+        echo "${{ steps.tfplan.outputs.exitcode && steps.uploadplan.outcome == 'success' }}"
+
+
+  terraform-apply:
+    name: 'Terraform Apply'
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+    if: |
+      needs.terraform-plan.outputs.exitcode != 1 &&
+      needs.terraform-plan.outputs.planuploaded
+    environment:
+      name: sandbox-test
+    steps:
+    - name: Terraform Apply Potential
+      run: |
+        echo "TF Plan exit code?"
+        echo "${{ needs.terraform-plan.outputs.exitcode }}"
+        echo "Was plan uploaded successfully?"
+        echo "${{ needs.terraform-plan.outputs.planuploaded }}"
+
+    - name: Checkout Git
+      uses: actions/checkout@v4
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_DEPLOY_ROLE }}
+        role-session-name: samplerolesession
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Check directory 1
+      run: ls
+
+    - name: Download Terraform Plan
+      uses: actions/download-artifact@v4
+      with:
+        name: uploadplan
+
+    - name: Check directory 2
+      run: |
+        ls
+        pwd
+
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    - name: Install TF
+      uses: hashicorp/setup-terraform@v3
+
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Initialize TF
+      run: |
+        cd src
+        terraform init \
+        -backend-config="sandbox_backend.tfvars"
+
+    - name: Terraform Apply
+      run: |
+        cd src
+        terraform apply "terraform.tfplan"
