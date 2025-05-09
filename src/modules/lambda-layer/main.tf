@@ -9,7 +9,7 @@ locals {
 }
 
 # used to be null_resource with triggers = { requirements = ...}
-# create zip file from requirements.txt. Triggers only when the file is updated
+# create zip file from requirements file. Triggers only when the file is updated
 resource "terraform_data" "lambda_layer" {
   triggers_replace = [filesha1(local.requirements_full_path)]
 
@@ -39,7 +39,7 @@ resource "terraform_data" "lambda_layer" {
 # todo - is this redundant?
 data "aws_s3_bucket" "selected" {
   bucket = var.layer_bucket != "" ? var.layer_bucket : (
-  "${var.project_name}-${var.env_abbrev}"
+  "${var.project_name}-${var.env_abbrev}-${var.region_abbrev}"
   )
 }
 
