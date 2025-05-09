@@ -28,7 +28,6 @@ resource "terraform_data" "lambda_layer" {
             echo ${local.log2}
             python3.12 -m pip install --upgrade pip
             python3.12 -m pip install --upgrade setuptools
-            python3.12 -m distutils.core --help
             python3.12 -m pip install -r ${local.requirements_full_path} -t layer/
             zip -r ${local.layer_zip_name} layer/
         else
