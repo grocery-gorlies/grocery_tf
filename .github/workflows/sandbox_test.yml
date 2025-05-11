@@ -89,7 +89,7 @@ jobs:
     - name: Terraform Apply Potential
       run: |
         echo "Will TF apply run?"
-        echo "${{ steps.tfplan.outputs.exitcode && steps.uploadplan.outcome == 'success' }}"
+        echo "${{ steps.tfplan.outputs.exitcode != 1 && steps.uploadplan.outcome == 'success' }}"
 
 
   terraform-apply:

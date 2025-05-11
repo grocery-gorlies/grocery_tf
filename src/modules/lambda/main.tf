@@ -7,6 +7,7 @@ locals {
   }
 
   function_name = "${var.function_name}-${var.env_abbrev}"
+  dummy_file_path = "${path.cwd}/modules/lambda/lambda_wrapper.py"
 }
 
 
@@ -116,7 +117,7 @@ resource "aws_iam_role_policy_attachment" "combined"{
 
 data "archive_file" "dummy_python" {
   type        = "zip"
-  source_file = "lambda_wrapper.py"
+  source_file = local.dummy_file_path
   output_path = "lambda_function.zip"
 }
 
