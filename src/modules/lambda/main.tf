@@ -138,9 +138,11 @@ resource "aws_lambda_function" "lambda" {
   layers                         = var.layers
   timeout = var.timeout
   # nice to add - implement non dummy package uploads?
-  filename                       = var.filename == "" ?
-    data.archive_file.dummy_python.output_path :
-    var.filename
+  filename                       = var.filename == "" ? (
+  data.archive_file.dummy_python.output_path
+  ) : (
+  var.filename
+  )
   # intention is to prevent dummy file to keep overwriting
   #   actual source code that is to be updated by another
   #   ci/cd pipeline using aws cli
