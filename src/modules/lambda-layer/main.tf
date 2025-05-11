@@ -58,12 +58,13 @@ resource "aws_s3_object" "lambda_layer_zip" {
   depends_on = [terraform_data.lambda_layer] # triggered only if the zip file is created
 }
 
-# create lambda layer from s3 object
+# source_code_hash should update layer with new version if uncommented
 resource "aws_lambda_layer_version" "lambda_layer" {
   s3_bucket           = data.aws_s3_bucket.selected.id
   s3_key              = aws_s3_object.lambda_layer_zip.key
   layer_name          = var.layer_name
   compatible_runtimes = var.compatible_runtimes
+  # source_code_hash    = aws_s3_object.lambda_layer_zip.checksum_sha256
   skip_destroy        = true
   depends_on          = [aws_s3_object.lambda_layer_zip] # triggered only if the zip file is uploaded to the bucket
 }
