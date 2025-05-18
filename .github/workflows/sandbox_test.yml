@@ -94,7 +94,6 @@ jobs:
         if $result; then
           exit 0
         else
-          echo "$result"
           exit 1
         fi
 
