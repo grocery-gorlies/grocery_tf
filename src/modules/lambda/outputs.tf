@@ -9,15 +9,15 @@ output "name" {
 }
 
 output "role_created" {
-  value = aws_iam_role.lambda.count == 0 ? false : true
+  value = var.create_role
 }
 
-output "iam_name" {
-  value       = aws_iam_role.lambda.count == 0 ? "" : aws_iam_role.lambda.name[0]
+output "created_iam_name" {
+  value       = var.create_role ? aws_iam_role.lambda[0].name : ""
   description = "Name of iam used by lambda"
 }
 
-output "iam_arn" {
-  value       = aws_iam_role.lambda.count == 0 ? "" : aws_iam_role.lambda.arn[0]
+output "created_iam_arn" {
+  value       = var.create_role ? aws_iam_role.lambda[0].arn : ""
   description = "ARN of iam used by lambda"
 }
