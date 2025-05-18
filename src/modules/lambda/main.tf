@@ -30,6 +30,7 @@ resource "aws_iam_role" "lambda" {
 
   name               = "${local.function_name}-lambda-iam"
   assume_role_policy = data.aws_iam_policy_document.assume_role[0].json
+  path               = "/${var.project_name}-${var.env_abbrev}/"
 
   tags = merge({
     resource = "iam"
@@ -49,9 +50,8 @@ resource "aws_iam_role_policy_attachment" "cloudwatch" {
 
 resource "aws_cloudwatch_log_group" "lambda" {
   name = join("/", [
-    "/lambda",
-    var.region,
-    "${var.project_name}-${var.env_abbrev}",
+    "/${var.project_name}-${var.env_abbrev}",
+    "lambda",
     local.function_name
   ])
   retention_in_days = 7
@@ -100,10 +100,11 @@ data "aws_iam_policy_document" "combined" {
 
 resource "aws_iam_policy" combined {
   # count = var.create_role && (var.policy1_enabled || var.policy2_enabled) ? 1 : 0
-  count = var.create_role && var.attach_basic_s3_policy ? 1 : 0
-  name = "combined-${local.function_name}"
+  count       = var.create_role && var.attach_basic_s3_policy ? 1 : 0
+  name        = "combined-${local.function_name}-lambda-policy"
   description = "combined policy for lambda ${local.function_name}"
-  policy = data.aws_iam_policy_document.combined[0].json
+  policy      = data.aws_iam_policy_document.combined[0].json
+  path        = "/${var.project_name}-${var.env_abbrev}/"
 }
 
 
