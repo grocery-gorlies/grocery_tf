@@ -120,7 +120,7 @@ resource "aws_iam_role_policy_attachment" "combined"{
 data "archive_file" "dummy_python" {
   type        = "zip"
   source_file = local.dummy_file_path
-  output_path = "${path.module}/myfile-${timestamp()}.zip"
+  output_path = "${path.module}/lambda-dummy.zip"
 }
 
 
