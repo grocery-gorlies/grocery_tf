@@ -35,7 +35,7 @@ module "input-handler-lambda" {
   region_abbrev = var.ue1
 
   attach_basic_s3_policy = true
-  used_s3_resources = [module.gg-s3-bucket.bucket_arn]
+  used_s3_resources = ["${module.gg-s3-bucket.bucket_arn}/*"]
 
   function_name = "input-handler"
   description   = "Handles input from users."
