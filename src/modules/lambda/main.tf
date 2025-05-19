@@ -117,7 +117,9 @@ resource "aws_iam_role_policy_attachment" "combined"{
 }
 
 
-data "archive_file" "dummy_python" {
+resource "archive_file" "dummy_python" {
+  # switched from data to resource because plan to deprecate scrapped due to
+  # unexpected behavior
   type        = "zip"
   source_file = local.dummy_file_path
   output_path = "${path.module}/dummy.zip"
@@ -142,7 +144,7 @@ resource "aws_lambda_function" "lambda" {
   timeout = var.timeout
   # nice to add - implement non dummy package uploads?
   filename                       = var.filename == "" ? (
-  data.archive_file.dummy_python.output_path
+  archive_file.dummy_python.output_path
   ) : (
   var.filename
   )
