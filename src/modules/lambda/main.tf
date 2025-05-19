@@ -5,6 +5,10 @@ locals {
     project     = var.project_name
     function    = var.function_name
   }
+
+  function_name = "${var.function_name}-${var.env_abbrev}"
+  # dummy_file_path = "${path.cwd}/modules/lambda/lambda_wrapper.py"
+  dummy_file_path = "${path.module}/lambda_wrapper.py"
 }
 
 
@@ -25,8 +29,9 @@ data "aws_iam_policy_document" "assume_role" {
 resource "aws_iam_role" "lambda" {
   count = var.create_role ? 1 : 0
 
-  name               = "${var.function_name}-lambda-iam"
+  name               = "${local.function_name}-lambda-iam"
   assume_role_policy = data.aws_iam_policy_document.assume_role[0].json
+  path               = "/${var.project_name}-${var.env_abbrev}/"
 
   tags = merge({
     resource = "iam"
@@ -39,17 +44,16 @@ resource "aws_iam_role" "lambda" {
 
 resource "aws_iam_role_policy_attachment" "cloudwatch" {
   count = var.create_role ? 1 : 0
-  role       = aws_iam_role.lambda.name
+  role       = aws_iam_role.lambda[0].name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
 
 resource "aws_cloudwatch_log_group" "lambda" {
   name = join("/", [
-    "/lambda",
-    var.region,
-    "${var.project_name}-${var.env_abbrev}",
-    aws_lambda_function.lambda.function_name
+    "/${var.project_name}-${var.env_abbrev}",
+    "lambda",
+    local.function_name
   ])
   retention_in_days = 7
   lifecycle {
@@ -97,10 +101,11 @@ data "aws_iam_policy_document" "combined" {
 
 resource "aws_iam_policy" combined {
   # count = var.create_role && (var.policy1_enabled || var.policy2_enabled) ? 1 : 0
-  count = var.create_role && var.attach_basic_s3_policy ? 1 : 0
-  name = "combined-${var.function_name}"
-  description = "combined policy for lambda ${var.function_name}"
-  policy = data.aws_iam_policy_document.combined[0].json
+  count       = var.create_role && var.attach_basic_s3_policy ? 1 : 0
+  name        = "combined-${local.function_name}-lambda-policy"
+  description = "combined policy for lambda ${local.function_name}"
+  policy      = data.aws_iam_policy_document.combined[0].json
+  path        = "/${var.project_name}-${var.env_abbrev}/"
 }
 
 
@@ -112,17 +117,19 @@ resource "aws_iam_role_policy_attachment" "combined"{
 }
 
 
-data "archive_file" "dummy_python" {
+resource "archive_file" "dummy_python" {
+  # switched from data to resource because plan to deprecate scrapped due to
+  # unexpected behavior
   type        = "zip"
-  source_file = "lambda_wrapper.py"
-  output_path = "lambda_function.zip"
+  source_file = local.dummy_file_path
+  output_path = "${path.module}/dummy.zip"
 }
 
 
 # A dependency on a resource with count = 0 is valid,
 # because the resource block still exists even though it declares zero instances.
 resource "aws_lambda_function" "lambda" {
-  function_name                  = var.function_name
+  function_name                  = local.function_name
   description                    = var.description
   role                           = var.create_role ? (
   aws_iam_role.lambda[0].arn
@@ -136,9 +143,11 @@ resource "aws_lambda_function" "lambda" {
   layers                         = var.layers
   timeout = var.timeout
   # nice to add - implement non dummy package uploads?
-  filename                       = var.filename == "" ?
-    data.archive_file.dummy_python.output_path :
-    var.filename
+  filename                       = var.filename == "" ? (
+  archive_file.dummy_python.output_path
+  ) : (
+  var.filename
+  )
   # intention is to prevent dummy file to keep overwriting
   #   actual source code that is to be updated by another
   #   ci/cd pipeline using aws cli
