@@ -71,7 +71,7 @@ variable "memory_size" {
 variable "concurrency_limit" {
   type        = number
   description = "Limit on how many lambdas can run concurrently. -1 is unlimited, 0 prevents any runs"
-  default     = 10
+  default     = -1
 }
 
 variable "runtime" {
