@@ -47,3 +47,15 @@ module "input-handler-lambda" {
   }
   asynchronous = true
 }
+
+module "input-handler-api-gateway" {
+  source           = "./modules/api-gateway-openapi"
+  template_file    = "./modules/api-gateway-openapi/templates/input-handler.json"
+  region           = var.us-east-1
+  lambda_arn       = module.input-handler-lambda.arn
+  api_gateway_name = "input-handler-api"
+  api_description  = "API to handle Grocery Gorlies entries"
+  stage_name       = "gg-dev"
+}
+
+#todo: add cloudwatch? and also tags

@@ -1,0 +1,38 @@
+variable "template_file" {
+  type        = string
+  description = "Template file name for api creation"
+}
+
+variable "region" {
+  type        = string
+  description = "Region of resource"
+  default     = "us-east-1"
+}
+
+# "arn:aws:apigateway:${aws_region}:lambda:path/2015-03-31/functions/${get_lambda_arn}/invocations"
+variable "lambda_arn" {
+  type        = string
+  description = "ARN of lambda used for backend_url"
+  default     = ""
+}
+
+variable "api_gateway_name" {
+  type        = string
+  description = "Name of API Gateway"
+}
+
+variable "api_description" {
+  type        = string
+  description = "Description of API"
+}
+
+variable "backend_url" {
+  type        = string
+  description = "URI used to invoke backend"
+  default     = ""
+}
+
+variable "stage_name" {
+  type        = string
+  description = "API stage name"
+}
