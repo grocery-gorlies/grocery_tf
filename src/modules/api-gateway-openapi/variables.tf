@@ -9,6 +9,19 @@ variable "region" {
   default     = "us-east-1"
 }
 
+variable "project_name" {
+  type        = string
+  description = "Name of project"
+  default     = "general"
+}
+
+# make required if env's extend
+variable "env_abbrev" {
+  type        = string
+  description = "sbox/int/prod"
+  default     = "sbox"
+}
+
 # "arn:aws:apigateway:${aws_region}:lambda:path/2015-03-31/functions/${get_lambda_arn}/invocations"
 variable "lambda_arn" {
   type        = string

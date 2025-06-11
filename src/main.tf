@@ -51,6 +51,8 @@ module "input-handler-lambda" {
 module "input-handler-api-gateway" {
   source           = "./modules/api-gateway-openapi"
   template_file    = "./modules/api-gateway-openapi/templates/input-handler.json"
+  project_name     = var.gg_project_name
+  env_abbrev       = var.env_abbrev
   region           = var.us-east-1
   lambda_arn       = module.input-handler-lambda.arn
   api_gateway_name = "input-handler-api"
