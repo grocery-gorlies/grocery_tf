@@ -49,3 +49,8 @@ variable "stage_name" {
   type        = string
   description = "API stage name"
 }
+
+variable "iam_role_arn" {
+  type        = string
+  description = "IAM Role ARN used for API Gateway"
+}

@@ -11,7 +11,7 @@ locals {
   dummy_file_path = "${path.module}/lambda_wrapper.py"
 }
 
-
+# todo - refactor to use general iam module
 data "aws_iam_policy_document" "assume_role" {
   count = var.create_role ? 1 : 0
 

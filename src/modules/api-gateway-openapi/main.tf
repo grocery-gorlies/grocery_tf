@@ -20,6 +20,10 @@ data "template_file" "api_oas" {
   }
 }
 
+resource "aws_api_gateway_account" "this"{
+  cloudwatch_role_arn = var.iam_role_arn
+}
+
 resource "aws_api_gateway_rest_api" "this" {
   name        = var.api_gateway_name
   description = var.api_description
