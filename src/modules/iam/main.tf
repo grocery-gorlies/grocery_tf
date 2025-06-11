@@ -67,7 +67,7 @@ resource "aws_iam_policy" combined {
   count = (
     var.attach_basic_s3_policy ||
     var.attach_basic_cloudwatch_policy
-  ) ? 0 : 1
+  ) ? 1 : 0
 
   name        = "combined-${aws_iam_role.this.name}-policy"
   description = "combined policy for ${var.resource_type} ${var.resource_name}"
