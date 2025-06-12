@@ -45,7 +45,7 @@
       "post": {
         "summary": "Enter new item with json string",
         "operationId": "newItemJson",
-        "tags": ["entry", "free entry"],
+        "tags": ["entry"],
         "requestBody": {
           "description": "Store item to add",
           "required": true,
