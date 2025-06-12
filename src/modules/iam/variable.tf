@@ -18,7 +18,7 @@ variable "env_abbrev" {
 }
 
 variable "role_name" {
-  type = string
+  type        = string
   description = "name for IAM role"
 }
 
@@ -33,7 +33,7 @@ variable "identifiers" {
 }
 
 variable "attach_basic_s3_policy" {
-  type = bool
+  type    = bool
   default = false
 }
 
@@ -44,7 +44,12 @@ variable "used_s3_resources" {
 }
 
 variable "attach_basic_cloudwatch_policy" {
-  type = bool
+  type    = bool
+  default = false
+}
+
+variable "attach_lambda_invoke_policy" {
+  type    = bool
   default = false
 }
 

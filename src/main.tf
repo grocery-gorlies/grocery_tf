@@ -57,6 +57,7 @@ module "input-handler-apigateway-iam" {
   identifiers = ["apigateway.amazonaws.com"]
   role_name                      = "input-handler-apigateway-iam"
   attach_basic_cloudwatch_policy = true
+  attach_lambda_invoke_policy    = true
   resource_type                  = "API Gateway"
   resource_name                  = "input-handler-api"
 }

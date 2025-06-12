@@ -56,10 +56,21 @@ data "aws_iam_policy_document" "cloudwatch" {
   }
 }
 
+data "aws_iam_policy_document" "lambda_invoke" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "lambda:InvokeFunction"
+    ]
+    resources = ["*"]
+  }
+}
+
 data "aws_iam_policy_document" "combined" {
   source_policy_documents = compact([
       var.attach_basic_s3_policy == true ? data.aws_iam_policy_document.s3.json : "",
       var.attach_basic_cloudwatch_policy == true ? data.aws_iam_policy_document.cloudwatch.json : "",
+      var.attach_lambda_invoke_policy == true ? data.aws_iam_policy_document.lambda_invoke.json: ""
   ])
 }
 

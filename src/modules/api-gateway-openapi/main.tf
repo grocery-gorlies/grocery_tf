@@ -60,7 +60,7 @@ resource "aws_api_gateway_method_settings" "this" {
     metrics_enabled = true
     logging_level   = "INFO"
   }
-  
+
   depends_on = [aws_api_gateway_account.this]
 }
 
