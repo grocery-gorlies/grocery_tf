@@ -73,3 +73,14 @@ resource "aws_cloudwatch_log_group" "this" {
   ])
   retention_in_days = 7
 }
+
+resource "aws_lambda_permission" "lambda_permission" {
+  count         = var.set_lambda_permission && var.lambda_function_name != "" ? 1 : 0
+  action        = "lambda:InvokeFunction"
+  function_name = var.lambda_function_name
+  principal     = "apigateway.amazonaws.com"
+
+  # The /* part allows invocation from any stage, method and resource path
+  # within API Gateway.
+  source_arn = "${aws_api_gateway_rest_api.this.execution_arn}/*/*/*"
+}
