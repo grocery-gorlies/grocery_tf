@@ -153,6 +153,10 @@ resource "aws_lambda_function" "lambda" {
   #   ci/cd pipeline using aws cli
   source_code_hash = null
 
+  logging_config {
+    log_group = aws_cloudwatch_log_group.lambda.name
+  }
+
   environment {
     variables = var.environment_variables
   }

@@ -49,6 +49,19 @@ resource "aws_api_gateway_stage" "this" {
   deployment_id = aws_api_gateway_deployment.this.id
   rest_api_id   = aws_api_gateway_rest_api.this.id
   stage_name    = var.stage_name
+
+  # Access Logs
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.this.arn
+    # Define a custom log format using $context variables
+    format = jsonencode({
+      requestId = "$context.requestId"
+      ip        = "$context.identity.sourceIp"
+      method    = "$context.httpMethod"
+      path      = "$context.path"
+      status    = "$context.status"
+    })
+  }
 }
 
 resource "aws_api_gateway_method_settings" "this" {
