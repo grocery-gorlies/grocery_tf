@@ -11,7 +11,7 @@ locals {
   dummy_file_path = "${path.module}/lambda_wrapper.py"
 }
 
-
+# todo - refactor to use general iam module
 data "aws_iam_policy_document" "assume_role" {
   count = var.create_role ? 1 : 0
 
@@ -152,6 +152,11 @@ resource "aws_lambda_function" "lambda" {
   #   actual source code that is to be updated by another
   #   ci/cd pipeline using aws cli
   source_code_hash = null
+
+  logging_config {
+    log_format = "JSON"
+    log_group = aws_cloudwatch_log_group.lambda.name
+  }
 
   environment {
     variables = var.environment_variables

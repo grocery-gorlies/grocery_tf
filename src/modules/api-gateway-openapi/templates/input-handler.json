@@ -1,0 +1,122 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "input-handler REST API",
+    "version": "0.0.1",
+    "description": "API for entering store items"
+  },
+  "servers": [
+    {
+      "url": "https://grocery-gorlies-api.sandbox.com/v1",
+      "description": "Sandbox API endpoint for Grocery Gorlies API"
+    }
+  ],
+  "paths": {
+    "/new": {
+      "post": {
+        "summary": "Enter new item",
+        "operationId": "newItem",
+        "tags": ["entry"],
+        "requestBody": {
+          "description": "Store item to add",
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/item"
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "uri": "${backend_url}",
+          "httpMethod": "POST",
+          "type": "AWS_PROXY",
+          "passthroughBehavior": "when_no_match"
+        },
+        "responses": {
+          "200": {
+            "description": "item created"
+          }
+        }
+      }
+    },
+    "/new-json": {
+      "post": {
+        "summary": "Enter new item with json string",
+        "operationId": "newItemJson",
+        "tags": ["entry"],
+        "requestBody": {
+          "description": "Store item to add",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/item"
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "uri": "${backend_url}",
+          "httpMethod": "POST",
+          "type": "AWS_PROXY",
+          "passthroughBehavior": "when_no_match"
+        },
+        "responses": {
+          "200": {
+            "description": "item created"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "item": {
+        "type": "object",
+        "required": [
+          "name",
+          "brand",
+          "store",
+          "price",
+          "zipcode"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Total Greek Yogurt, 0% Nonfat, Plain"
+          },
+          "brand": {
+            "type": "string",
+            "example": "FAGE"
+          },
+          "store": {
+            "type": "string",
+            "example": "ACME"
+          },
+          "price": {
+            "type": "number",
+            "example": 6.99
+          },
+          "size": {
+            "type": "string",
+            "example": "32oz"
+          },
+          "zipcode": {
+            "type": "string",
+            "example": "07024"
+          },
+          "onsale": {
+            "type": "boolean",
+            "example": false
+          },
+          "saleuntil": {
+            "type": "string",
+            "example": "06302025"
+          }
+        }
+      }
+    }
+  }
+}

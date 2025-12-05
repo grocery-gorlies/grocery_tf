@@ -47,3 +47,34 @@ module "input-handler-lambda" {
   }
   asynchronous = true
 }
+
+module "input-handler-apigateway-iam" {
+  source                         = "./modules/iam"
+  project_name                   = var.gg_project_name
+  env_abbrev                     = var.env_abbrev
+  region                         = var.us-east-1
+  entity_type                    = "Service"
+  identifiers = ["apigateway.amazonaws.com"]
+  role_name                      = "input-handler-apigateway-iam"
+  attach_basic_cloudwatch_policy = true
+  attach_lambda_invoke_policy    = true
+  resource_type                  = "API Gateway"
+  resource_name                  = "input-handler-api"
+}
+
+module "input-handler-api-gateway" {
+  source                = "./modules/api-gateway-openapi"
+  template_file         = "./modules/api-gateway-openapi/templates/input-handler.json"
+  project_name          = var.gg_project_name
+  env_abbrev            = var.env_abbrev
+  region                = var.us-east-1
+  lambda_arn            = module.input-handler-lambda.arn
+  api_gateway_name      = "input-handler-api"
+  api_description       = "API to handle Grocery Gorlies entries"
+  stage_name            = "gg-dev"
+  iam_role_arn          = module.input-handler-apigateway-iam.created_iam_arn
+  set_lambda_permission = true
+  lambda_function_name  = module.input-handler-lambda.name
+}
+
+#todo: add cloudwatch? and also tags
